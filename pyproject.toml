@@ -4,6 +4,22 @@ version = "0.1.0"
 description = "boot.dev project"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = false 
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["src/tests"]  # Set the directory where pytest looks for tests
+addopts = "-v --tb=short"  # Add default pytest options
+python_files = "test_*.py"  # Match test file names (e.g., test_example.py)
+python_classes = "Test*"  # Match test class names (e.g., TestExample)
+python_functions = "test_*"  # Match test function names (e.g., test_example)
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
     "mypy>=1.15.0",
+    "ruff>=0.11.0",
 ]

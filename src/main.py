@@ -1,10 +1,7 @@
-from textnode import TextNode, TextType
-from htmlnode import HTMLNode
+from src.textnode import TextNode, TextType
 
-
-
-def main():
-    test = TextNode("This is some anchor text", "link", "https://www.boot.dev")
+def main() -> None:
+    test = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
     print(test)
 
 if __name__ == "__main__":
