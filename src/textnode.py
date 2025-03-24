@@ -6,8 +6,8 @@ class TextType(Enum):
     ITALIC = "italic"
     CODE = "code"
     LINK = "link"
-    IMAGE = "image"
-    # Texttype()
+    IMAGE = "image"  
+    # Texttype()  
     
 class TextNode:
     """An intermediate representation of an inline markdown element
@@ -35,8 +35,4 @@ class TextNode:
         )
     
     def __repr__(self) -> str:
-        """ print TextNode object in correct format
-        >>> repr(TextNode("This is some anchor text", "link", "https://www.google.com")) 
-        TextNode(This is some anchor text, link, https://www.google.com)'"""
-        
         return f"{self.__class__.__name__}({self.text}, {self.text_type}, {self.url})"

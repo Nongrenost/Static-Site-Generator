@@ -31,7 +31,7 @@ class HTMLNode():
         
 class LeafNode(HTMLNode):
     """represents a single HTML tag with no children"""
-    def __init__(self, tag:str, value:str | None,props: dict[str,str] | None = None) -> None:
+    def __init__(self, tag:str, value:str | None, props: dict[str,str] | None = None) -> None:
         super().__init__(tag = tag, value = value, children=None, props = props)
     
     def to_html(self) -> str:
@@ -42,4 +42,4 @@ class LeafNode(HTMLNode):
         if self.props is None:
             return f'<{self.tag}>{self.value}</{self.tag}>'
         
-        return f'<{self.tag} {next(iter(self.props.keys()))}="{next(iter(self.props.values()))}">{self.value}</{self.tag}>'
+        return f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>'

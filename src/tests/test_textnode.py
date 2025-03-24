@@ -31,6 +31,8 @@ def test_eq_not_equal_text_type() -> None:
 
     assert TextNode("This is a text node", TextType.BOLD) != TextNode("This is a text node", TextType.CODE)
 
+def test_repr() -> None:
+    assert repr(TextNode("This is some anchor text", TextType.LINK, "https://www.google.com")) == "TextNode(This is some anchor text, TextType.LINK, https://www.google.com)"
 
 """if __name__ == "__main__":
     unittest.main()"""
