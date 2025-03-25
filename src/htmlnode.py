@@ -1,8 +1,12 @@
+from typing import TypeAlias
+from typing import Sequence
+
+NodeType: TypeAlias = 'LeafNode | ParentNode'
 
 class HTMLNode():
     """represent a "node" in an HTML document tree, block or inline
     """
-    def __init__(self, tag: str | None = None, value: str | None = None, children: list["HTMLNode"] | None = None, props: dict[str, str] | None  = None) -> None:
+    def __init__(self, tag: str | None = None, value: str | None = None, children: Sequence["HTMLNode"] | None = None, props: dict[str, str] | None  = None) -> None:
         self.tag = tag              # tag name string # None tag will just render as raw text
         self.value = value          # value of the html tag # if None node assumed to have children
         self.children = children    # a list of node's children # if None node assumed to have a value
@@ -31,8 +35,8 @@ class HTMLNode():
         
 class LeafNode(HTMLNode):
     """represents a single HTML tag with no children"""
-    def __init__(self, tag:str, value:str | None, props: dict[str,str] | None = None) -> None:
-        super().__init__(tag = tag, value = value, children=None, props = props)
+    def __init__(self, tag:str | None, value:str | None, props: dict[str,str] | None = None) -> None:
+        super().__init__(tag, value, None, props)
     
     def to_html(self) -> str:
         if self.value is None:
@@ -43,3 +47,24 @@ class LeafNode(HTMLNode):
             return f'<{self.tag}>{self.value}</{self.tag}>'
         
         return f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>'
+    
+class ParentNode(HTMLNode):
+    """represents HTML node with children"""
+    def __init__(self, tag:str, children:Sequence[NodeType], props: dict[str,str] | None = None) -> None:
+        super().__init__(tag=tag, value=None, children=children, props=props)
+        
+    def to_html(self) -> str:
+        if self.tag is None:
+            raise ValueError("Parentnode missing a tag")
+        if self.children is None:
+            raise ValueError("Childnode is missing a value")
+
+        result ="" 
+        for child in self.children:
+            result += child.to_html()
+                   
+        return f'<{self.tag}{self.props_to_html()}>{result}</{self.tag}>'    
+
+
+    
+    
