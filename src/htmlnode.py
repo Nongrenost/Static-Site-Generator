@@ -13,6 +13,17 @@ class HTMLNode():
         self.props = props          # key-value pairs representing the attributes of the HTML tag
         #{"href": "https://www.google.com"}
         
+    def __eq__(self, other: object) -> bool:
+
+        if not isinstance(other, HTMLNode):
+            return NotImplemented
+        return (
+            self.tag == other.tag
+            and self.value == other.value
+            and self.children == other.children
+            and self.props == other.props
+        )
+        
         
     def to_html(self) -> str:
         """child classes override to render as html"""
