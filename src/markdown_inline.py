@@ -38,7 +38,7 @@ def extract_markdown_images(text: str) -> list[tuple[str, str]]:
 
 def extract_markdown_links(text: str) -> list[tuple[str, str]]:
     """return a list of (alt text, link_url) pairs from markdown string"""
-    pattern = "(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"   
+    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"   
     result = re.findall(pattern, text)
     return result
 
@@ -46,10 +46,20 @@ def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
     """given list of textnodes, split its text into list of text and image textnodes"""
        
     result = []
+    
     for old_node in old_nodes:
         text = old_node.text
+        
+        if text == "":
+            result.append(TextNode(text, TextType.TEXT))
+            continue
+    
         while text:
             images = extract_markdown_images(text)
+            
+            if old_node.text_type != TextType.TEXT:
+                result.append(old_node)
+                break
             
             if not extract_markdown_images(text):
                 result.append(TextNode(text,TextType.TEXT))
@@ -57,6 +67,9 @@ def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
             
             delimiter = f"![{images[0][0]}]({images[0][1]})"
             splitted = text.split(delimiter, 1)
+            
+            if len(splitted) % 2 != 0:
+                ValueError("Wrong markdown link syntax")
             chunk = ""
             
             if splitted[0] == "":
@@ -65,13 +78,59 @@ def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
             else:
                 result.append(TextNode(splitted[0], TextType.TEXT))
                 chunk = splitted[0]
-            text = text.lstrip(chunk)
+            text = text.removeprefix(chunk)
+            
     return result
         
 def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
     """given list of textnodes, split its text into list of text and link textnodes"""
-    return [TextNode("text", TextType.TEXT)]
 
-# def splitter(old_node: List[TextNode]) -> list[TextNode]:
-#     return 
+    result = []
     
+    for old_node in old_nodes:
+        text = old_node.text
+        
+        if text == "":
+            result.append(TextNode(text, TextType.TEXT))
+            continue
+        
+        while text:
+            links = extract_markdown_links(text)
+            
+            if old_node.text_type != TextType.TEXT:
+                result.append(old_node)
+                break
+            
+            if not extract_markdown_links(text):
+                result.append(TextNode(text,TextType.TEXT))
+                break
+            
+            delimiter = f"[{links[0][0]}]({links[0][1]})"
+            splitted = text.split(delimiter, 1)
+            
+            if len(splitted) % 2 != 0:
+                ValueError("Wrong markdown link syntax")
+            chunk = ""
+            
+            if splitted[0] == "":
+                result.append(TextNode(links[0][0], TextType.LINK, links[0][1]))
+                chunk = delimiter
+            else:
+                result.append(TextNode(splitted[0], TextType.TEXT))
+                chunk = splitted[0]
+            text = text.removeprefix(chunk)
+            
+    return result
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    old_textnode = [TextNode(text, TextType.TEXT)]
+    
+    bold_nodes = split_nodes_delimiter(old_textnode, "**", TextType.BOLD)
+    italic_nodes = split_nodes_delimiter(bold_nodes, "_", TextType.ITALIC)
+    code_nodes = split_nodes_delimiter(italic_nodes, "`", TextType.CODE)
+    image_nodes = split_nodes_image(code_nodes)
+    link_nodes = split_nodes_link(image_nodes)
+
+    
+    return link_nodes

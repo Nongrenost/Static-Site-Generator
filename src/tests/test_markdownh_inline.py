@@ -1,5 +1,5 @@
 import pytest
-from src.inline import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
+from src.markdown_inline import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
 from src.textnode import TextNode, TextType
 
 
@@ -100,9 +100,8 @@ def test_split_nodes_link() -> None:
      TextNode("This is text with a link ", TextType.TEXT),
      TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
      TextNode(" and ", TextType.TEXT),
-     TextNode(
-         "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
-     )]
+     TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev")
+     ]
     assert splitted == result
     
     
@@ -205,3 +204,39 @@ def test_split_nodes_image5() -> None:
             ]
     assert splitted == result
 
+def test_split_nodes_image_empty_node() -> None:
+    """Test with an empty text node"""
+    node = TextNode("", TextType.TEXT)
+    result = split_nodes_image([node])
+    assert result == [node]
+
+def test_split_nodes_image_no_images() -> None:
+    """Test with text that contains no images"""
+    node = TextNode("This is just plain text with no images", TextType.TEXT)
+    result = split_nodes_image([node])
+    assert result == [node]
+    
+def test_text_to_textnodes() -> None:
+    text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    textnodes = text_to_textnodes(text)
+    
+    result = [
+    TextNode("This is ", TextType.TEXT),
+    TextNode("text", TextType.BOLD),
+    TextNode(" with an ", TextType.TEXT),
+    TextNode("italic", TextType.ITALIC),
+    TextNode(" word and a ", TextType.TEXT),
+    TextNode("code block", TextType.CODE),
+    TextNode(" and an ", TextType.TEXT),
+    TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+    TextNode(" and a ", TextType.TEXT),
+    TextNode("link", TextType.LINK, "https://boot.dev"),
+    ]
+    assert textnodes == result
+    
+def test_text_to_textnode_only_text() -> None:
+    text = 'Time to put all the "splitting" functions together into a function that can convert a raw string of markdown-flavored text into a list of'
+    textnodes = text_to_textnodes(text)
+    result = [TextNode('Time to put all the "splitting" functions together into a function that can convert a raw string of markdown-flavored text into a list of', TextType.TEXT)]
+    
+    assert textnodes == result
