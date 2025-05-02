@@ -124,6 +124,7 @@ def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
 
 
 def text_to_textnodes(text: str) -> list[TextNode]:
+    """given markdown text, return a list of Text nodes"""
     old_textnode = [TextNode(text, TextType.TEXT)]
     
     bold_nodes = split_nodes_delimiter(old_textnode, "**", TextType.BOLD)

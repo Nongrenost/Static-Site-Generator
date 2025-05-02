@@ -1,5 +1,5 @@
 from enum import Enum
-from src.htmlnode import LeafNode
+from src.htmlnode import LeafNode, NodeType
 
 class TextType(Enum):
     TEXT = "text"
@@ -38,7 +38,7 @@ class TextNode:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.text}, {self.text_type}, {self.url})"
     
-def text_node_to_leaf_node(text_node: TextNode) -> LeafNode:
+def text_node_to_html_node(text_node: TextNode) -> NodeType:
    
     match text_node.text_type:
         case TextType.BOLD:
