@@ -17,9 +17,6 @@ def generate_website() -> None:
     delete_contents(public_path)
     copy_content(static_path, public_path)
    
-    
-
-    
 def delete_contents(path:str) -> None:
     """recursively delete everything in public folder"""
     public_content = os.listdir(path)
@@ -27,8 +24,12 @@ def delete_contents(path:str) -> None:
     for item in public_content:
         item_fullpath = os.path.join(path, item)
         
-        log_file(item_fullpath, "d") 
-        shutil.rmtree(item_fullpath)
+        if os.path.isdir(item_fullpath):
+            log_file(item_fullpath, "d") 
+            shutil.rmtree(item_fullpath)
+        else:           
+            log_file(item_fullpath, "d") 
+            os.remove(item_fullpath)
                 
     
 def copy_content(static_path: str, public_path: str) -> None:
@@ -37,7 +38,7 @@ def copy_content(static_path: str, public_path: str) -> None:
     
     for item in folder_contents:
         item_abs_path = os.path.join(static_path, item)
-        destination_abs_path = os.path.join(static_path, item)
+        destination_abs_path = os.path.join(public_path, item)
         
         if os.path.isfile(item_abs_path):
             log_file(item_abs_path, "c", destination_abs_path)
@@ -45,8 +46,8 @@ def copy_content(static_path: str, public_path: str) -> None:
             shutil.copy(item_abs_path, destination_abs_path)
         elif os.path.isdir(item_abs_path):
             
-            log_file(item_abs_path, "c", destination_abs_path) 
-            shutil.copy(item_abs_path, destination_abs_path)
+            log_file(item_abs_path, "c", destination_abs_path)
+            os.mkdir(destination_abs_path) 
             
             copy_content(item_abs_path, destination_abs_path)
     

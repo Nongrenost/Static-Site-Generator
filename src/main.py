@@ -1,8 +1,7 @@
-from src.textnode import TextNode, TextType
-from src.generator import generate_website
+from generator import generate_website
 
 def main() -> None:
-    
+    generate_website()
 
     
 
