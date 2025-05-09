@@ -35,10 +35,11 @@ This is a paragraph with **bold** and _italic_ text.
 
 ## Heading 2
 
-* List item 1
-* List item 2 with `code`
+- List item 1
+- List item 2 with `code`
 
 > This is a blockquote with **formatting**
+> Line
 
 ```
 def sample_code():
@@ -48,7 +49,9 @@ def sample_code():
 
     node = markdown_to_html_node(md)
     test = node.to_html()
-    result = "<div><h1>Heading 1</h1><p>This is a paragraph with <b>bold</b> and <i>italic</i> text.</p><h2>Heading 2</h2><ul><li>List item 1</li><li>List item 2 with <code>code</code></li></ul><blockquote>This is a blockquote with <b>formatting</b></blockquote><pre><code>def sample_code():\n    return \"No _formatting_ here\"\n</code></pre></div>"
+    result = "<div><h1>Heading 1</h1><p>This is a paragraph with <b>bold</b> and <i>italic</i> text.</p><h2>Heading 2</h2><ul><li>List item 1</li><li>List item 2 with <code>code</code></li></ul><blockquote>This is a blockquote with <b>formatting</b> Line</blockquote><pre><code>def sample_code():\n    return \"No formatting here\"\n</code></pre></div>"
+    print(test)
+    print(result)
     assert test == result
 
 def test_ordered_list() -> None:

@@ -44,7 +44,7 @@ def block_to_block_type(block: str) -> BlockType:
 
 
 def markdown_to_blocks(text: str) -> list[str]:
-    """given a valid markdown text, break it into blocks separated by an empty line"""
+    """given a valid markdown text, break it into a list of text blocks"""
     splitted= text.split("\n\n")
     stripped = []
     for block in splitted:

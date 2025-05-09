@@ -3,7 +3,7 @@ from typing import List
 import re
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> List[TextNode]:
-    """split 'text' textnodes by delimiter into a list of textnodes with correct text type"""
+    """split an old TextNode by delimiter into a list of TextNodes with correct text_type"""
 
     result = []
     # iterate over input list

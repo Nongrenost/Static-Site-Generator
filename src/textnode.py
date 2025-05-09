@@ -1,32 +1,25 @@
 from enum import Enum
-from src.htmlnode import LeafNode, NodeType
+from src.htmlnode import LeafNode
 
 class TextType(Enum):
+    """Types of inline markdown text"""
     TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
     LINK = "link"
     IMAGE = "image"  
-    # Texttype()  
     
 class TextNode:
-    """An intermediate representation of an inline markdown element
-    """
+    """An intermediate representation of an inline markdown element"""
     def __init__(self, text: str, text_type: TextType, url: str | None = None):
         self.text = text           #The text content of the node
-        self.text_type = text_type #The type of text this node contains, which is a member of the TextType enum.
-        self.url = url             #The URL of the link or image, if the text is a link. Default to None if nothing is passed in. 
-        
+        self.text_type = text_type #The type of text from TextType enum.
+        self.url = url             #The URL if type link or image, else None
         #TextNode(This is some anchor text, link, https://www.google.com)
         
     def __eq__(self, other: object) -> bool:
-        """
-        >>> TextNode("Text", TextType.BOLD) == TextNode("Text", TextType.BOLD)
-        True
-        >>> TextNode("Text", TextType.BOLD) == TextNode("", TextType.BOLD)
-        False
-        """
+        """return true if objects are equal"""
         if not isinstance(other, TextNode):
             return NotImplemented
         return (
@@ -38,7 +31,8 @@ class TextNode:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.text}, {self.text_type}, {self.url})"
     
-def text_node_to_html_node(text_node: TextNode) -> NodeType:
+def text_node_to_html_node(text_node: TextNode) -> LeafNode:
+    """coverts TextNode to an HTMLNode(LeafNode)"""
    
     match text_node.text_type:
         case TextType.BOLD:

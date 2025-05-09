@@ -4,12 +4,11 @@ from typing import Sequence
 NodeType: TypeAlias = 'LeafNode | ParentNode'
 
 class HTMLNode():
-    """represent a "node" in an HTML document tree, block or inline
-    """
+    """represent a "node" in an HTML document tree, block or inline"""
     def __init__(self, tag: str | None = None, value: str | None = None, children: Sequence["HTMLNode"] | None = None, props: dict[str, str] | None  = None) -> None:
-        self.tag = tag              # tag name string # None tag will just render as raw text
-        self.value = value          # value of the html tag # if None node assumed to have children
-        self.children = children    # a list of node's children # if None node assumed to have a value
+        self.tag = tag              # tag name string # None tag will render as raw text
+        self.value = value          # text content # if None node assumed to have children
+        self.children = children    # list of children HTMLNodes # if None assumed to have a value
         self.props = props          # key-value pairs representing the attributes of the HTML tag
         #{"href": "https://www.google.com"}
         
@@ -50,6 +49,7 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
     
     def to_html(self) -> str:
+        """render a leaf node as an HTML string"""
         if self.value is None:
             raise ValueError
         if self.tag is None:
@@ -65,16 +65,17 @@ class ParentNode(HTMLNode):
         super().__init__(tag=tag, value=None, children=children, props=props)
         
     def to_html(self) -> str:
+        """render parent node and its children nodes as one HTML string"""
         if self.tag is None:
             raise ValueError("Parentnode missing a tag")
         if self.children is None:
-            raise ValueError("Childnode is missing a value")
+            raise ValueError("Parentnode misses children")
 
-        result ="" 
+        children_html ="" 
         for child in self.children:
-            result += child.to_html()
+            children_html += child.to_html()
                    
-        return f'<{self.tag}{self.props_to_html()}>{result}</{self.tag}>'    
+        return f'<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>'    
 
 
     

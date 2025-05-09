@@ -23,6 +23,31 @@ def test_block_to_block_type_paragraph() -> None:
     result = BlockType.PARAGRAPH
     assert test == result
     
+def test_markdown_to_blocks_mixed_and_code() -> None:
+        
+    md = """# Heading 1
+
+This is a paragraph with **bold** and _italic_ text.
+
+## Heading 2
+
+- List item 1
+- List item 2 with `code`
+
+> This is a blockquote with **formatting**
+
+```
+def sample_code():
+    return "No formatting here"
+```
+"""
+    test = markdown_to_blocks(md)
+    result = ["# Heading 1", "This is a paragraph with **bold** and _italic_ text.", "## Heading 2", "- List item 1\n- List item 2 with `code`", "> This is a blockquote with **formatting**", '```\ndef sample_code():\n    return "No formatting here"\n```']
+    print(test)
+    print(result)
+    assert test == result
+    
+    
 
 def test_block_to_block_type_heading() -> None:
     block = "# Heading"
@@ -50,6 +75,7 @@ def test_block_to_block_type_not_heading_but_tag() -> None:
 
 def test_block_to_block_type_code() -> None:
     block = """```python
+    
 Print("Hello World")
 ```"""
     test = block_to_block_type(block)
