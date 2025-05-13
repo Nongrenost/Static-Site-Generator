@@ -1,15 +1,10 @@
 import os
 import shutil
+from src.markdown_to_html import markdown_to_html_node
 
 
-
-    #delete everything inside public until empty
-    # copy everything from static into public
-    # log the path of each file copied to debug
-    # add public dir to gitignore
-    #test
     
-def generate_website() -> None:
+def rewrite_public() -> None:
     """delete all files in public, then copy all files from static into public"""
     public_path = "/home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator/public"
     static_path = "/home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator/static"
@@ -25,31 +20,27 @@ def delete_contents(path:str) -> None:
         item_fullpath = os.path.join(path, item)
         
         if os.path.isdir(item_fullpath):
-            log_file(item_fullpath, "d") 
             shutil.rmtree(item_fullpath)
         else:           
-            log_file(item_fullpath, "d") 
             os.remove(item_fullpath)
                 
     
-def copy_content(static_path: str, public_path: str) -> None:
+def copy_content(source_path: str, dest_path: str) -> None:
     
-    folder_contents = os.listdir(static_path)
+    folder_contents = os.listdir(source_path)
     
-    for item in folder_contents:
-        item_abs_path = os.path.join(static_path, item)
-        destination_abs_path = os.path.join(public_path, item)
+    for file_path in folder_contents:
+        source_file_path = os.path.join(source_path, file_path)
+        dest_file_path = os.path.join(dest_path, file_path)
         
-        if os.path.isfile(item_abs_path):
-            log_file(item_abs_path, "c", destination_abs_path)
+        if os.path.isfile(source_file_path):
+            shutil.copy(source_file_path, dest_file_path)
             
-            shutil.copy(item_abs_path, destination_abs_path)
-        elif os.path.isdir(item_abs_path):
+        else:
+            os.path.isdir(source_file_path)
             
-            log_file(item_abs_path, "c", destination_abs_path)
-            os.mkdir(destination_abs_path) 
-            
-            copy_content(item_abs_path, destination_abs_path)
+            os.mkdir(dest_file_path) 
+            copy_content(source_file_path, dest_file_path)
     
     
 def log_file(file_path: str, operation: str, filepath2: str|None = None) -> None:
@@ -57,4 +48,63 @@ def log_file(file_path: str, operation: str, filepath2: str|None = None) -> None
         print(f"Deleting {file_path}")
     if operation == "c":
         print(f"Copying {file_path} to {filepath2}")
+        
+def extract_title(md_file: str) -> str:
+    """return title (value of h1 heading) from markdown text"""
+    heading = md_file.split("\n\n")[0]
+    if not heading.startswith("# "):
+        raise ValueError("Markdown file misses an H1 heading")
+    else:
+        return heading.replace("# ", "")
+    
+def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+    """generate an html page from a markdown file at the dest_path using template.html"""
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}.")
+    
+    text= ""
+    with open(from_path) as f:
+        text = f.read()
+    title = extract_title(text)
+    html_text = markdown_to_html_node(text).to_html()
+    
+    template = ""
+    with open(template_path) as f:
+        template = f.read()
+    template = template.replace("{{ Title }}", title)
+    template = template.replace("{{ Content }}", html_text)
+    
+    
+    path_with_html_extension = f"{os.path.splitext(dest_path)[0]}.html"
+    
+    html_text_to_file(template, path_with_html_extension)
+    
+    #if os.path.exists(dest_path):
+    #   html_text_to_file(template, dest_path)
+    #else:
+    #   os.mkdir(dest_path)
+    #   html_text_to_file(template, dest_path)
+       
+    
+def html_text_to_file(html_text: str, path: str) -> None:
+    """write html text into a file"""
+    
+    with open(path, "w") as f:
+        f.write(html_text)
+    
+def generate_pages_recursively(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
+    """generate HTML pages for all markdown documents"""
+    folder_content = os.listdir(dir_path_content)
+    for file_name in folder_content:
+        
+        source_file_path = os.path.join(dir_path_content, file_name)
+        dest_file_path = os.path.join(dest_dir_path, file_name)
+        
+        if os.path.isfile(source_file_path):
+            generate_page(source_file_path, template_path, dest_file_path)
+        
+        if os.path.isdir(source_file_path):
+            os.mkdir(dest_file_path)
+            generate_pages_recursively(source_file_path, template_path, dest_file_path)
+        
+    
     

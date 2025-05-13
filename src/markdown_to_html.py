@@ -142,4 +142,3 @@ def text_to_children(block: str, block_type: BlockType) -> Sequence[NodeType]:
                 children.append(text_node_to_html_node(node))
     
     return children
-
