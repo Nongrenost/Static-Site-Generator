@@ -9,14 +9,14 @@ def rewrite_public() -> None:
     public_path = "/home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator/public"
     static_path = "/home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator/static"
     
-    delete_contents(public_path)
-    copy_content(static_path, public_path)
+    delete_folder_content(public_path)
+    copy_folder_content(static_path, public_path)
    
-def delete_contents(path:str) -> None:
-    """recursively delete everything in public folder"""
-    public_content = os.listdir(path)
+def delete_folder_content(path:str) -> None:
+    """recursively delete everything in target directory"""
+    dir_path = os.listdir(path)
     
-    for item in public_content:
+    for item in dir_path:
         item_fullpath = os.path.join(path, item)
         
         if os.path.isdir(item_fullpath):
@@ -25,7 +25,8 @@ def delete_contents(path:str) -> None:
             os.remove(item_fullpath)
                 
     
-def copy_content(source_path: str, dest_path: str) -> None:
+def copy_folder_content(source_path: str, dest_path: str) -> None:
+    """recursively copy everything from source path to desination path"""
     
     folder_contents = os.listdir(source_path)
     
@@ -40,7 +41,7 @@ def copy_content(source_path: str, dest_path: str) -> None:
             os.path.isdir(source_file_path)
             
             os.mkdir(dest_file_path) 
-            copy_content(source_file_path, dest_file_path)
+            copy_folder_content(source_file_path, dest_file_path)
     
     
 def log_file(file_path: str, operation: str, filepath2: str|None = None) -> None:
@@ -58,7 +59,7 @@ def extract_title(md_file: str) -> str:
         return heading.replace("# ", "")
     
 def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
-    """generate an html page from a markdown file at the dest_path using template.html"""
+    """generate an html page from markdown file in from_path at the dest_path using template.html"""
     print(f"Generating page from {from_path} to {dest_path} using {template_path}.")
     
     text= ""
@@ -73,10 +74,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html_text)
     
-    
     path_with_html_extension = f"{os.path.splitext(dest_path)[0]}.html"
     
-    html_text_to_file(template, path_with_html_extension)
+    write_file(template, path_with_html_extension)
     
     #if os.path.exists(dest_path):
     #   html_text_to_file(template, dest_path)
@@ -85,14 +85,14 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     #   html_text_to_file(template, dest_path)
        
     
-def html_text_to_file(html_text: str, path: str) -> None:
-    """write html text into a file"""
+def write_file(text: str, path: str) -> None:
+    """write text file on a disk"""
     
     with open(path, "w") as f:
-        f.write(html_text)
+        f.write(text)
     
-def generate_pages_recursively(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
-    """generate HTML pages for all markdown documents"""
+def generate_pages(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
+    """recursively generate HTML pages for all markdown documents"""
     folder_content = os.listdir(dir_path_content)
     for file_name in folder_content:
         
@@ -104,7 +104,7 @@ def generate_pages_recursively(dir_path_content: str, template_path: str, dest_d
         
         if os.path.isdir(source_file_path):
             os.mkdir(dest_file_path)
-            generate_pages_recursively(source_file_path, template_path, dest_file_path)
+            generate_pages(source_file_path, template_path, dest_file_path)
         
     
     
