@@ -2,7 +2,6 @@ import os
 import shutil
 from src.markdown_to_html import markdown_to_html_node
 
-
     
 def rewrite_public() -> None:
     """delete all files in public, then copy all files from static into public"""
@@ -58,7 +57,7 @@ def extract_title(md_file: str) -> str:
     else:
         return heading.replace("# ", "")
     
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str) -> None:
     """generate an html page from markdown file in from_path at the dest_path using template.html"""
     print(f"Generating page from {from_path} to {dest_path} using {template_path}.")
     
@@ -73,6 +72,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         template = f.read()
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html_text)
+    
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
     
     path_with_html_extension = f"{os.path.splitext(dest_path)[0]}.html"
     
@@ -91,7 +93,7 @@ def write_file(text: str, path: str) -> None:
     with open(path, "w") as f:
         f.write(text)
     
-def generate_pages(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
+def generate_pages(dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str) -> None:
     """recursively generate HTML pages for all markdown documents"""
     folder_content = os.listdir(dir_path_content)
     for file_name in folder_content:
@@ -100,11 +102,11 @@ def generate_pages(dir_path_content: str, template_path: str, dest_dir_path: str
         dest_file_path = os.path.join(dest_dir_path, file_name)
         
         if os.path.isfile(source_file_path):
-            generate_page(source_file_path, template_path, dest_file_path)
+            generate_page(source_file_path, template_path, dest_file_path, basepath)
         
         if os.path.isdir(source_file_path):
             os.mkdir(dest_file_path)
-            generate_pages(source_file_path, template_path, dest_file_path)
+            generate_pages(source_file_path, template_path, dest_file_path, basepath)
         
     
     
