@@ -3,9 +3,9 @@ import shutil
 from src.markdown_to_html import markdown_to_html_node
 
     
-def rewrite_public() -> None:
+def rewrite_public(public: str) -> None:
     """delete all files in public, then copy all files from static into public"""
-    public_path = "/home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator/public"
+    public_path = public
     static_path = "/home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator/static"
     
     delete_folder_content(public_path)

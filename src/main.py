@@ -3,9 +3,10 @@ from src.generator import rewrite_public, generate_pages
 
 def main() -> None:
     basepath = get_basepath()
+    site_build_dir = "docs"
     
-    rewrite_public()
-    generate_pages("content", "template.html", "public", basepath)
+    rewrite_public(site_build_dir)
+    generate_pages("content", "template.html", site_build_dir, basepath)
 
 def get_basepath() -> str:
     if len(sys.argv) > 1:
