@@ -128,6 +128,8 @@ def text_to_children(block: str, block_type: BlockType) -> Sequence[NodeType]:
             leaf_nodes = []
             
             for line in lines:
+                if line.strip() == ">":
+                    continue
                 stripped_lines.append(line.replace("> ", "", 1))
                 
             text_nodes = text_to_textnodes("\n".join(stripped_lines))

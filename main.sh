@@ -3,4 +3,4 @@
 
 cd /home/liras/workspace/Github.com/Nongrenost/Static-Site-Generator
 uv run -m src.main
-cd public && uv run -m http.server 8888
+cd docs && uv run -m http.server 8888
